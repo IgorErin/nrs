@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Write`] interface.
 
-use num_derive::{FromPrimitive, ToPrimitive};
-
 use crate::allocator::Slice;
 use crate::vfs;
 
@@ -17,7 +15,7 @@ use super::file;
 /// `data` and the metadata to stable storage, including all or none, before returning a reply
 /// the client. There is no guarantee whether or when any uncommitted data will subsequently be
 /// commited to stable storage.
-#[derive(Clone, Copy, Eq, PartialEq, FromPrimitive, ToPrimitive, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum StableHow {
     Unstable = 0,
     DataSync = 1,

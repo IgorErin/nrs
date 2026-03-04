@@ -1,5 +1,3 @@
-use num_derive::{FromPrimitive, ToPrimitive};
-
 pub const HANDLE_SIZE: usize = 8;
 
 /// Unique file identifier.
@@ -10,7 +8,7 @@ pub const HANDLE_SIZE: usize = 8;
 pub struct Handle(pub [u8; HANDLE_SIZE]);
 
 /// Type of file.
-#[derive(Clone, Copy, FromPrimitive, ToPrimitive)]
+#[derive(Clone, Copy)]
 pub enum Type {
     /// Regular file.
     Regular = 1,

@@ -1,7 +1,5 @@
 //! Defines NFSv3 Virtual File System interface --- [`Vfs`].
 
-use num_derive::{FromPrimitive, ToPrimitive};
-
 pub mod access;
 pub mod commit;
 pub mod create;
@@ -35,7 +33,7 @@ pub const MAX_NAME_LEN: usize = 255;
 pub const MAX_PATH_LEN: usize = 1024;
 
 /// [`Vfs`] errors.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, ToPrimitive, FromPrimitive)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Error {
     /// Not owner. The operation was not allowed because the
     /// caller is either not a privileged user (root) or not the
