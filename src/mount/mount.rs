@@ -3,7 +3,8 @@
 //! as defined in RFC 1813 section 5.2.1.
 //! <https://datatracker.ietf.org/doc/html/rfc1813#section-5.2.1>.
 
-use crate::rpc::AuthFlavor;
+use std::path::PathBuf;
+
 use crate::vfs::file;
 
 /// Possible MOUNT errors
@@ -35,7 +36,7 @@ pub struct Success {
     pub file_handle: file::Handle,
     /// Vector of RPC authentication flavors that are supported with
     /// the client's use of the file handle (or any file handles derived from it)
-    pub auth_flavors: Vec<AuthFlavor>,
+    pub auth_flavors: Vec<i32>,
 }
 
 pub type Result = std::result::Result<Success, MntError>;
@@ -47,9 +48,7 @@ pub trait Promise {
 }
 
 /// Arguments for the Mount operation, containing the path to be mounted.
-#[cfg_attr(test, derive(Eq, PartialEq))]
-#[derive(Debug)]
-pub struct MountArgs(pub file::Path);
+pub struct MountArgs(pub PathBuf);
 
 pub trait Mnt {
     /// Maps a pathname on the server to a NFS version 3 protocol file handle.
@@ -61,7 +60,7 @@ pub trait Mnt {
     /// to its mount list recording that this client has mounted the directory.
     fn mnt(
         &self,
-        dirpath: file::Path,
+        dirpath: PathBuf,
         promise: impl Promise,
     ) -> impl std::future::Future<Output = ()> + Send;
 }

@@ -1,5 +1,7 @@
 //! Defines NFSv3 [`ReadLink`] interface.
 
+use std::path::PathBuf;
+
 use crate::vfs;
 
 use super::file;
@@ -9,7 +11,7 @@ pub struct Success {
     /// The post-operation attributes for the symbolic link.
     pub symlink_attr: Option<file::Attr>,
     /// The data associated with the symbolic link.
-    pub data: file::Path,
+    pub data: PathBuf,
 }
 
 /// Fail result.

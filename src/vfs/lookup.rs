@@ -1,5 +1,7 @@
 //! Defines NFSv3 [`Lookup`] interface.
 
+use std::path::PathBuf;
+
 use crate::vfs;
 
 use super::file;
@@ -32,7 +34,7 @@ pub struct Args {
     /// File handle for the directory to search.
     pub parent: file::Handle,
     /// File name to be searched for.
-    pub name: file::Name,
+    pub name: PathBuf,
 }
 
 pub trait Lookup {

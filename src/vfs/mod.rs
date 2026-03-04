@@ -145,7 +145,7 @@ pub struct DirOpArgs {
     /// The file handle for the directory.
     pub dir: file::Handle,
     /// The name of the entry within the directory.
-    pub name: file::Name,
+    pub name: String,
 }
 
 pub trait Vfs {}

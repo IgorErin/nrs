@@ -12,7 +12,7 @@ pub struct Entry {
     /// fileid values to some other value and servers should try
     /// to avoid sending a zero fileid.
     pub file_id: u64,
-    pub file_name: file::Name,
+    pub file_name: String,
     pub cookie: Cookie,
     pub file_attr: Option<file::Attr>,
     pub file_handle: Option<file::Handle>,

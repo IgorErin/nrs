@@ -1,5 +1,7 @@
 //! Defines NFSv3 [`Symlink`] interface.
 
+use std::path::PathBuf;
+
 use crate::vfs;
 
 use super::file;
@@ -37,7 +39,7 @@ pub struct Args {
     /// The initial attributes for the symbolic link.
     pub attr: super::set_attr::NewAttr,
     /// The symbolic link data.
-    pub path: file::Path,
+    pub path: PathBuf,
 }
 
 pub trait Symlink {

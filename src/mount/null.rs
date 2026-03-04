@@ -6,7 +6,7 @@
 /// Defines callback to pass [`Null::null`] result into.
 
 pub trait Promise {
-    async fn keep();
+    fn keep() -> impl std::future::Future<Output = ()> + Send;
 }
 
 pub trait Null {

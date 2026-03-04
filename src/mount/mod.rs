@@ -5,12 +5,12 @@
 
 pub mod dump;
 pub mod export;
-pub mod mnt;
+pub mod mount;
 pub mod null;
-pub mod umnt;
-pub mod umntall;
+pub mod unmount;
+pub mod unmount_all;
 
-use crate::vfs::file;
+use std::path::PathBuf;
 
 /// Maximum bytes in a path name.
 pub const MOUNT_DIRPATH_LEN: usize = 1024;
@@ -30,7 +30,7 @@ pub struct MountEntry {
     /// Name of the client host that is sending RPC.
     pub hostname: HostName,
     /// Server pathname of a directory.
-    pub directory: file::Path,
+    pub directory: PathBuf,
 }
 
 /// Export entry, containing list of clients, allowed to
@@ -38,7 +38,7 @@ pub struct MountEntry {
 #[derive(Clone)]
 pub struct ExportEntry {
     /// Exported directory.
-    pub directory: file::Path,
+    pub directory: PathBuf,
     /// Client host names. They are implementation specific
     /// and cannot be directly interpreted by clients.
     pub names: Vec<HostName>,
@@ -46,6 +46,6 @@ pub struct ExportEntry {
 
 /// MOUNT v3 procedures trait.
 pub trait Mount:
-    null::Null + mnt::Mnt + dump::Dump + umnt::Umnt + umntall::Umntall + export::Export
+    null::Null + mount::Mnt + dump::Dump + unmount::Umnt + unmount_all::UnmountAll + export::Export
 {
 }

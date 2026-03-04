@@ -9,11 +9,11 @@ pub trait Promise {
     fn keep() -> impl std::future::Future<Output = ()> + Send;
 }
 
-pub trait Umntall {
+pub trait UnmountAll {
     /// Removes all of the mount entries for this client previously
     /// recorded by calls to MNT.
     ///
     /// AUTH_UNIX authentication or better is required.
     /// There are no MOUNT protocol errors which can be returned from this procedure.
-    async fn umntall(&self) -> impl std::future::Future<Output = ()> + Send;
+    fn unmount_all(&self) -> impl std::future::Future<Output = ()> + Send;
 }
