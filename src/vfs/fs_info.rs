@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`FsInfo`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -76,9 +74,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`FsInfo::fs_info`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`FsInfo::fs_info`] arguments.
@@ -87,8 +85,11 @@ pub struct Args {
     pub root: file::Handle,
 }
 
-#[async_trait]
 pub trait FsInfo {
     /// Retrieves nonvolatile file system state information and general information.
-    async fn fs_info(&self, args: Args, promise: impl Promise);
+    fn fs_info(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Remove`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 /// Success result.
@@ -21,9 +19,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`Remove::remove`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`Remove::remove`] arguments.
@@ -32,8 +30,11 @@ pub struct Args {
     pub object: vfs::DirOpArgs,
 }
 
-#[async_trait]
 pub trait Remove {
     /// Removes (deletes) an entry from a directory.
-    async fn remove(&self, args: Args, promise: impl Promise);
+    fn remove(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

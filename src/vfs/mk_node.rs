@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`MkNode`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -46,9 +44,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`MkNode::mk_node`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`MkNode::mk_node`] arguments.
@@ -59,7 +57,6 @@ pub struct Args {
     pub what: What,
 }
 
-#[async_trait]
 pub trait MkNode {
     /// Creates a new special file of the type `what`.
     ///
@@ -68,5 +65,9 @@ pub trait MkNode {
     ///
     /// Otherwise, if the server does not support the target type the error,
     /// [`vfs::Error::BadType`], should be returned.
-    async fn mk_node(&self, args: Args, promise: impl Promise);
+    fn mk_node(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

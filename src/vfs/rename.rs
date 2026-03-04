@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Rename`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 /// Success result.
@@ -25,9 +23,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`Rename::rename`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`Rename::rename`] arguments.
@@ -40,7 +38,6 @@ pub struct Args {
     pub to: vfs::DirOpArgs,
 }
 
-#[async_trait]
 pub trait Rename {
     /// Renames the file in the directory.
     ///
@@ -70,5 +67,9 @@ pub trait Rename {
     ///
     /// If arguments pairs refer to the same file (they might be hard links of each other), then
     /// [`Rename::rename`] should perform no action and return [`Success`].
-    async fn rename(&self, args: Args, promise: impl Promise);
+    fn rename(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

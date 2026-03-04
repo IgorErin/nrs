@@ -3,8 +3,6 @@
 //! as defined in RFC 1813 section 5.2.1.
 //! <https://datatracker.ietf.org/doc/html/rfc1813#section-5.2.1>.
 
-use async_trait::async_trait;
-
 use crate::rpc::AuthFlavor;
 use crate::vfs::file;
 
@@ -43,9 +41,9 @@ pub struct Success {
 pub type Result = std::result::Result<Success, MntError>;
 
 /// Defines callback to pass [`Mnt::mnt`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(result: Result);
+    fn keep(result: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// Arguments for the Mount operation, containing the path to be mounted.
@@ -53,7 +51,6 @@ pub trait Promise {
 #[derive(Debug)]
 pub struct MountArgs(pub file::Path);
 
-#[async_trait]
 pub trait Mnt {
     /// Maps a pathname on the server to a NFS version 3 protocol file handle.
     ///
@@ -62,5 +59,9 @@ pub trait Mnt {
     ///
     /// This procedure also results in the server adding a new entry
     /// to its mount list recording that this client has mounted the directory.
-    async fn mnt(&self, dirpath: file::Path, promise: impl Promise);
+    fn mnt(
+        &self,
+        dirpath: file::Path,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

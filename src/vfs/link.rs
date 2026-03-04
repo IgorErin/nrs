@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Link`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -27,9 +25,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`Link::link`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`Link::link`] arguments.
@@ -40,7 +38,6 @@ pub struct Args {
     pub link: vfs::DirOpArgs,
 }
 
-#[async_trait]
 pub trait Link {
     /// Creates a hard link from [`Args::file`] to [`Args::link`], in the directory.
     ///
@@ -53,5 +50,9 @@ pub trait Link {
     /// On some servers, the filenames, "." and "..", are illegal for link names.
     /// In addition, the link name cannot be an alias for the target directory. These servers will
     /// return the error, [`vfs::Error::InvalidArgument`], in these cases.
-    async fn link(&self, args: Args, promise: impl Promise);
+    fn link(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

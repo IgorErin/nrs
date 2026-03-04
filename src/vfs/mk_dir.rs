@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`MkDir`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -27,9 +25,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`MkDir::mk_dir`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`MkDir::mk_dir`] arguments.
@@ -40,10 +38,13 @@ pub struct Args {
     pub attr: super::set_attr::NewAttr,
 }
 
-#[async_trait]
 pub trait MkDir {
     /// Creates a new subdirectory.
     ///
     /// Returns [`vfs::Error::Exist`] for "." or ".." `name`.
-    async fn mk_dir(&self, args: Args, promise: impl Promise);
+    fn mk_dir(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

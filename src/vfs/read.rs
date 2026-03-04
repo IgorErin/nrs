@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Read`] interface.
 
-use async_trait::async_trait;
-
 use crate::allocator::Slice;
 use crate::vfs;
 
@@ -30,9 +28,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`Read::read`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`Read::read`] arguments.
@@ -52,8 +50,11 @@ pub struct Args {
     pub count: u32,
 }
 
-#[async_trait]
 pub trait Read {
     /// Reads data from a file.
-    async fn read(&self, args: Args, promise: impl Promise);
+    fn read(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

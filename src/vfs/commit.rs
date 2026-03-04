@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Commit`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -27,9 +25,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`Commit::commit`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`Commit::commit`] arguments.
@@ -43,8 +41,11 @@ pub struct Args {
     pub count: u32,
 }
 
-#[async_trait]
 pub trait Commit {
     /// Forces or flushes data to stable storage that was previously written.
-    async fn commit(&self, args: Args, promise: impl Promise);
+    fn commit(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

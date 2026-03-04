@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`ReadLink`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -25,9 +23,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`ReadLink::read_link`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`ReadLink::read_link`] arguments.
@@ -36,12 +34,15 @@ pub struct Args {
     pub file: file::Handle,
 }
 
-#[async_trait]
 pub trait ReadLink {
     /// Reads the data associated with a symbolic link.
     ///
     /// The [`ReadLink::read_link`] operation is only allowed on
     /// objects of type [`file::Type::Symlink`]. The server should return the error,
     /// [`vfs::Error::InvalidArgument`], if the object is not of type, [`file::Type::Symlink`].
-    async fn read_link(&self, args: Args, promise: impl Promise);
+    fn read_link(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

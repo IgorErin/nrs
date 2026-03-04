@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`FsStat`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -47,9 +45,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`FsStat::fs_stat`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`FsStat::fs_stat`] arguments.
@@ -59,8 +57,11 @@ pub struct Args {
     pub root: file::Handle,
 }
 
-#[async_trait]
 pub trait FsStat {
     /// Retrieves volatile file system state information.
-    async fn fs_stat(&self, args: Args, promise: impl Promise);
+    fn fs_stat(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

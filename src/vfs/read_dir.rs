@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`ReadDir`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -80,9 +78,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`ReadDir::read_dir`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`ReadDir::read_dir`] arguments.
@@ -102,7 +100,6 @@ pub struct Args {
     pub count: u32,
 }
 
-#[async_trait]
 pub trait ReadDir {
     /// Retrieves a variable number of entries, in sequence, from a directory.
     ///
@@ -113,5 +110,9 @@ pub trait ReadDir {
     /// The [`Args::count`] specified by the client in the request should be greater than or equal to
     /// the server's preferred [`ReadDir`] transfer size from
     /// [`super::fs_info::Success::read_dir_pref`].
-    async fn read_dir(&self, args: Args, promise: impl Promise);
+    fn read_dir(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

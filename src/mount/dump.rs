@@ -3,8 +3,6 @@
 //! as defined in RFC 1813 section 5.2.2.
 //! <https://datatracker.ietf.org/doc/html/rfc1813#section-5.2.2>.
 
-use async_trait::async_trait;
-
 use super::MountEntry;
 
 /// Success result.
@@ -17,15 +15,14 @@ pub struct Success {
 }
 
 /// Defines callback to pass [`Dump::dump`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(result: Success);
+    fn keep(result: Success) -> impl std::future::Future<Output = ()> + Send;
 }
 
-#[async_trait]
 pub trait Dump {
     /// Retrieves the list of remotely mounted file systems.
     ///
     /// There are no MOUNT protocol errors which can be returned from this procedure.
-    async fn dump(&self, promise: impl Promise);
+    fn dump(&self, promise: impl Promise) -> impl std::future::Future<Output = ()> + Send;
 }

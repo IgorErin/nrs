@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`PathConf`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -45,9 +43,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`PathConf::path_conf`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`PathConf::path_conf`] arguments.
@@ -56,8 +54,11 @@ pub struct Args {
     pub file: file::Handle,
 }
 
-#[async_trait]
 pub trait PathConf {
     /// Retrieves the pathconf information for a file or directory.
-    async fn path_conf(&self, args: Args, promise: impl Promise);
+    fn path_conf(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

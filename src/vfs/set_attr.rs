@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`SetAttr`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -15,9 +13,9 @@ pub struct Guard {
 }
 
 /// Defines callback to pass [`SetAttr::set_attr`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// Strategy for updating timestamps in [`SetAttr`].
@@ -48,7 +46,6 @@ pub struct Args {
     pub guard: Option<Guard>,
 }
 
-#[async_trait]
 pub trait SetAttr {
     /// Changes one or more of the attributes of a file system object on the server.
     ///
@@ -75,5 +72,9 @@ pub trait SetAttr {
     /// - if implementation can only support 32 bit offset and sizes,
     ///   and [`SetAttr::set_attr`] request to set the size of a file to larger than
     ///   can be represented in 32 bit.
-    async fn set_attr(&self, args: Args, promise: impl Promise);
+    fn set_attr(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

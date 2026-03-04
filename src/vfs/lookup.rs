@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Lookup`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -24,9 +22,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`Lookup::lookup`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// [`Lookup::lookup`] arguments.
@@ -37,11 +35,14 @@ pub struct Args {
     pub name: file::Name,
 }
 
-#[async_trait]
 pub trait Lookup {
     /// Searches a directory for a specific name and returns the file handle for the corresponding
     /// file system object.
     ///
     /// Note that this procedure does not follow symbolic links.
-    async fn lookup(&self, args: Args, promise: impl Promise);
+    fn lookup(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

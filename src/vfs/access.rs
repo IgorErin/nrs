@@ -1,7 +1,5 @@
 //! Defines NFSv3 [`Access`] interface.
 
-use async_trait::async_trait;
-
 use crate::vfs;
 
 use super::file;
@@ -21,9 +19,9 @@ pub struct Fail {
 type Result = std::result::Result<Success, Fail>;
 
 /// Defines callback to pass [`Access::access`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(promise: Result);
+    fn keep(promise: Result) -> impl std::future::Future<Output = ()> + Send;
 }
 
 /// Mask of [`Access::access`] rights.
@@ -62,7 +60,6 @@ pub struct Args {
     pub mask: Mask,
 }
 
-#[async_trait]
 pub trait Access {
     /// Determines the access rights that a user, as identified by the credentials
     /// in the request, has with respect to a file system object.
@@ -73,5 +70,9 @@ pub trait Access {
     /// such access will be allowed to the file system object in
     /// the future, as access rights can be revoked by the server
     /// at any time.
-    async fn access(&self, args: Args, promise: impl Promise);
+    fn access(
+        &self,
+        args: Args,
+        promise: impl Promise,
+    ) -> impl std::future::Future<Output = ()> + Send;
 }

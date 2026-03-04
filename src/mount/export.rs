@@ -3,8 +3,6 @@
 //! as defined in RFC 1813 section 5.2.5.
 //! <https://datatracker.ietf.org/doc/html/rfc1813#section-5.2.5>.
 
-use async_trait::async_trait;
-
 use super::ExportEntry;
 
 /// Success result.
@@ -16,16 +14,15 @@ pub struct Success {
 }
 
 /// Defines callback to pass [`Export::export`] result into.
-#[async_trait]
+
 pub trait Promise {
-    async fn keep(result: Success);
+    fn keep(result: Success) -> impl std::future::Future<Output = ()> + Send;
 }
 
-#[async_trait]
 pub trait Export {
     /// Retrieves a vector of all the exported file systems and which clients
     /// are allowed to mount each one.
     ///
     /// There are no MOUNT protocol errors which can be returned from this procedure.
-    async fn export(&self, promise: impl Promise);
+    fn export(&self, promise: impl Promise) -> impl std::future::Future<Output = ()> + Send;
 }
