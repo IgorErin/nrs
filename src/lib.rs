@@ -2,4 +2,6 @@
 
 pub mod allocator;
 pub mod mount;
+pub mod serializer;
+mod utils;
 pub mod vfs;
